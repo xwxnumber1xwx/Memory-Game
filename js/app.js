@@ -38,6 +38,7 @@ function coverAllCards() {
     });
 }
 
+//card match
 function match(x, y, openCards) {
     openCards[x].className = 'card match';
     openCards[y].className = 'card match';
@@ -47,6 +48,7 @@ function match(x, y, openCards) {
     return openCards;
 }
 
+//card not match
 function notMatch(openCards){
     openCards.forEach(function (c) {
         c.className = 'card';
@@ -125,13 +127,16 @@ function newGame() {
                         } else {
                             //if the two cards are not the same, the game wait the next click to cover the cards and show them
                             openCards[y].className = 'card open show';
+                            //the chosen cards become red and animate it
+                            openCards[x].className = 'card open show not-match'
+                            openCards[y].className = 'card open show not-match'
                             continue;
                         }
                     }
                 }
             
         }
-        if (matchedCars == 12) {
+        if (matchedCars == 16) {
             setTimeout( function () {
                 youWon()
             }, 800);
