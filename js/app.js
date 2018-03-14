@@ -7,6 +7,10 @@ let moves = document.querySelector('.moves');
 let stars = document.querySelector('.stars');
 let starsChildren = stars.children;
 let matchedCars = 0;
+let tryAgain = document.querySelector('.close-button');
+// select all the cards
+let deckParents = document.querySelector('.deck');
+let openCards = [];
 
 /*
  * Display the cards on the page
@@ -45,13 +49,21 @@ function match(x, y, openCards) {
     openCards.pop(x);
     openCards.pop(y);
     matchedCars += 2;
+    //if the game ad been won, appears the score
+    if (matchedCars == 16) {
+        setTimeout( function () {
+            youWon()
+        }, 200);
+    }
     return openCards;
 }
 
 //card not match
 function notMatch(openCards){
     openCards.forEach(function (c) {
-        c.className = 'card';
+        //flip the card
+        c.className = 'card flip'
+        setTimeout(function (){c.className = 'card';}, 500);
         });
         openCards.length = 0;
         return openCards;
@@ -61,7 +73,6 @@ function notMatch(openCards){
 function removeStars() {
     moves.innerHTML++;
     if (moves.innerHTML == 2) {
-        console.log(starsChildren[2]);
         starsChildren[2].firstElementChild.className = 'fa fa-star-o';
     }
     if  (moves.innerHTML == 3) {
@@ -84,14 +95,15 @@ function resetStars() {
 function youWon() {
     const modal = document.querySelector('.modal');
     modal.style.display = 'block';
+    tryAgain.addEventListener('click', function () {
+        restart();
+        modal.style.display = 'none';
+    });
 }
 
 function newGame() {
-    let openCards = [];
+    openCards.length = 0;
     cards = shuffle(cards);
-    // select all the cards
-    let deckParents = document.querySelector('.deck');
-
     // remove all the card fron the DOM
     while (deckParents.firstChild) {
         deckParents.removeChild(deckParents.firstChild);
@@ -109,50 +121,52 @@ function newGame() {
         if ((event.target.nodeName === 'LI') && (event.target.className === "card")) {
             //adding one move
             removeStars();
+            //uncover the card
+            event.target.className = 'card flip';
             //show the selected card
-            event.target.className = 'card open show';
-            //check if the alredy have benn choose, if yes the card return covered
+            setTimeout(function() {
+                event.target.className += ' open show';
+            }, 250);
+
+            //check if the alredy have been choose, if yes the card return covered
             if (openCards.length > 1) {
                 openCards = notMatch(openCards);
             }
             //adding to the list the selected card
             openCards.push(event.target);
-                for (let x = 0; x < openCards.length; x++) {
-
-                    for (let y = (x+1); y < openCards.length; y++ ) {
-                        //check if the choosen cards are the same. if yes, they remain uncovered.
-                        if ((openCards[x].firstElementChild.outerHTML === openCards[y].firstElementChild.outerHTML)) {
-                            openCards = match(x, y, openCards);
-                            continue;
-                        } else {
-                            //if the two cards are not the same, the game wait the next click to cover the cards and show them
-                            openCards[y].className = 'card open show';
-                            //the chosen cards become red and animate it
-                            openCards[x].className = 'card open show not-match'
-                            openCards[y].className = 'card open show not-match'
-                            continue;
-                        }
-                    }
-                }
-            
-        }
-        if (matchedCars == 16) {
-            setTimeout( function () {
-                youWon()
-            }, 800);
+            //first card
+            if (openCards.length > 1) {
+                openCards[1].className += ' flip';
+                //check if the choosen cards are the same. if yes, they remain uncovered.
+                if ((openCards[0].firstElementChild.outerHTML === openCards[1].firstElementChild.outerHTML)) {
+                    setTimeout(function() {
+                        openCards = match(0, 1, openCards);
+                    }, 500)
+                } else {
+                    //if the two cards are not the same, the game wait the next click to cover the cards and show them
+                    //the chosen cards become red and animate it
+                    setTimeout(function() {
+                        openCards[0].className = 'card open show not-match';
+                        openCards[1].className = 'card open show not-match' }, 500);
+                }    
+            }
         }
     });
 }
 
 
 newGame();
-const restartGame = document.querySelector('.restart');
-restartGame.addEventListener('click', function() {
-    resetStars()
+
+function restart() {
+    resetStars();
     moves.innerHTML = 0;
+    matchedCars = 0;
     coverAllCards();
-    newGame();
-});
+    newGame(); 
+}
+
+const restartGame = document.querySelector('.restart');
+restartGame.addEventListener('click', restart);
 
 
 /*
