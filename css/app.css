@@ -151,6 +151,10 @@ h1 {
     cursor: pointer;
 }
 
+.score-panel .timer {
+    margin-left: 75px;
+}
+
 /* You won message */
 .modal {
     display: none;
@@ -190,13 +194,15 @@ h1 {
         width: 400px;
         min-height: 412px;
     }
+
     .deck .card {
         height: 70px;
         width: 70px;
     }
+
     .modal-content{
         padding-top: 100px;
-    }
+    }    
 }
 
 @media screen and (max-width: 449px) {
@@ -219,5 +225,8 @@ h1 {
 
     .score-panel {
         width: 250px;
+    }
+    .score-panel .timer {
+        margin-left: 25px;
     }
 }

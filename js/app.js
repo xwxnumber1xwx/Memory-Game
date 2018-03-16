@@ -11,9 +11,14 @@ let tryAgain = document.querySelector('.close-button');
 // select all the cards
 let deckParents = document.querySelector('.deck');
 let openCards = [];
+//score
 const userScore = document.querySelector('.score');
 const userStars = document.querySelector('.stars-score');
+//timer
+let interval = 0;
 const timer = document.querySelector('.timer');
+const scoreTime = document.querySelector('.score-time')
+
 
 /*
  * Display the cards on the page
@@ -36,6 +41,23 @@ function shuffle(array) {
 
     return array;
 }
+
+//timer
+function startTimer() {
+    timer.lastElementChild.innerHTML = '00';
+    timer.firstElementChild.innerHTML = '00';
+    interval = setInterval(function () {
+        //minutes
+        if (timer.lastElementChild.innerHTML < 59) {
+            timer.lastElementChild.innerHTML = ('0' + ++timer.lastElementChild.innerHTML).slice(-2);
+        } else {
+        //hours
+            timer.lastElementChild.innerHTML = '00';
+            timer.firstElementChild.innerHTML = ('0' + ++timer.firstElementChild.innerHTML).slice(-2);
+        }
+    }, 1000);
+    }
+    
 //cover all the cards
 function coverAllCards() {
     let coveredCards = document.querySelectorAll('.match, .show, .open');
@@ -46,11 +68,12 @@ function coverAllCards() {
 }
 
 //card match
-function match(x, y, openCards) {
-    openCards[x].className += ' card match';
-    openCards[y].className += ' card match';
-    openCards.pop(x);
-    openCards.pop(y);
+function match(openCards) {
+    openCards.forEach(function (opCard) {
+        opCard.className += ' card match';
+    });
+    openCards.pop();
+    openCards.pop();
     matchedCars += 2;
     //if the game ad been won, appears the score
     if (matchedCars == 16) {
@@ -94,8 +117,12 @@ function resetStars() {
 
 //Appers when the game has been won
 function youWon() {
+    //stop the timer
+    clearInterval(interval);
+    //elaborate the score
     score();
     const modal = document.querySelector('.modal');
+    //show the score
     modal.style.display = 'block';
     tryAgain.addEventListener('click', function () {
         restart();
@@ -106,11 +133,22 @@ function youWon() {
 
 // wiew the score on modal window
 function score() {
+    //adding the moves
     userScore.innerHTML = moves.innerHTML;
+    //add the timer result
+    scoreTime.firstElementChild.innerHTML = timer.firstElementChild.innerHTML;
+    scoreTime.lastElementChild.innerHTML = timer.lastElementChild.innerHTML;
 }
 
 function newGame() {
+    //reset moves
+    moves.innerHTML = 0;
+    matchedCars = 0;
+    //readding the stars
+    userStars.innerHTML = 3;
+    //resetting list of choosen cards
     openCards.length = 0;
+    //cards shuffle
     cards = shuffle(cards);
     // remove all the card fron the DOM
     while (deckParents.firstChild) {
@@ -149,34 +187,39 @@ function newGame() {
                 //check if the choosen cards are the same. if yes, they remain uncovered.
                 if ((openCards[0].firstElementChild.outerHTML === openCards[1].firstElementChild.outerHTML)) {
                     setTimeout(function() {
-                        openCards = match(0, 1, openCards);
+                        openCards = match(openCards);
                     }, 500)
                 } else {
                     //if the two cards are not the same, the game wait the next click to cover the cards and show them
                     //the chosen cards become red and animate it
                     setTimeout(function() {
-                        openCards[0].className += ' not-match';
-                        openCards[1].className += ' not-match' }, 500);
+                        openCards.forEach(function (opCard) {
+                            opCard.className += ' not-match';
+                        });
+                    }, 500);
                 }    
             }
         }
     });
 }
-//timer
-setInterval(timer.innerHTML++, 1000); //DOESN'T WORK
-//new Game
-newGame();
 
 //restart the game
 function restart() {
     resetStars();
-    timer.innerHTML = 0;
-    moves.innerHTML = 0;
-    matchedCars = 0;
-    userStars.innerHTML = 3;
+    //reset the timer and restart it
+    clearInterval(interval);
+    startTimer();
+    //cover the cards
     coverAllCards();
+    //start new game
     newGame();
 }
+
+//new Game
+newGame();
+
+//starting the timer
+startTimer();
 
 //restart button on modal window
 const restartGame = document.querySelector('.restart');
