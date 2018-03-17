@@ -110,8 +110,8 @@ function removeStars() {
 
 // Adding stars when restart
 function resetStars() {
-    for (let i = 0; i < 2; i++) {
-        starsChildren[i].lastElementChild.className = 'fa fa-star';
+    for (let i = 1; i < 3; i++) {
+        starsChildren[i].firstElementChild.className = 'fa fa-star';
     }
 }
 
@@ -188,7 +188,7 @@ function newGame() {
                 if ((openCards[0].firstElementChild.outerHTML === openCards[1].firstElementChild.outerHTML)) {
                     setTimeout(function() {
                         openCards = match(openCards);
-                    }, 500)
+                    }, 150)
                 } else {
                     //if the two cards are not the same, the game wait the next click to cover the cards and show them
                     //the chosen cards become red and animate it
@@ -196,7 +196,7 @@ function newGame() {
                         openCards.forEach(function (opCard) {
                             opCard.className += ' not-match';
                         });
-                    }, 500);
+                    }, 150);
                 }    
             }
         }
